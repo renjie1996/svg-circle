@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SVG进度条</title>
+  <style>
+    /*一样的选择，stroke就是边框颜色*/
+    /*stroke-dashoffset 虚线的起始偏移量*/
+    /*stroke-dasharray为一个逗号或空格分割的数值列表，把stroke分为好几段*/
+    
+    #svg circle {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+      stroke: #fffa52;
+      stroke-width: 1em;
+    }
+    
+     #svg #bar{
+      stroke: #ed4890
+    }
+    
+    #cont {
+      display: block;
+      height: 200px;
+      width: 200px;
+      margin: 2em auto;
+      box-shadow: 0 0 1em black;
+      border-radius: 100%;
+      position: relative;
+    }
+    
+    #cont:after {
+      position: absolute;
+      display: block;
+      height: 160px;
+      width: 160px;
+      left: 50%;
+      top: 50%;
+      box-shadow: inset 0 0 1em black;
+      /*重点：伪元素的赋值*/
+      /*content可以由标签上的值来设置*/
+      content: attr(data-pct)"%";
+      margin-top: -80px;
+      margin-left: -80px;
+      border-radius: 100%;
+      line-height: 160px;
+      font-size: 2em;
+      text-shadow: 0 0 0.5em black;
+    }
+    
+    input {
+      color: #000;
+    }
+    /* Make things perty */
+    
+    html {
+      height: 100%;
+    }
+    
+    body {
+      font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+      background: url(http://www.jmchristensendesign.com/wp-content/themes/jmcdsn/images/intro_default-background.jpg);
+      color: #fff;
+      height: 100%;
+      padding-top: 2em;
+      text-align: center;
+    }
+    
+    h1,
+    h2 {
+      margin: 0;
+      text-transform: uppercase;
+      text-shadow: 0 0 0.5em black;
+    }
+    
+    h2 {
+      font-weight: 300
+    }
+    
+    input {
+      border: 1px solid #666;
+      background: #333;
+      color: #fff;
+      padding: 0.5em;
+      box-shadow: none;
+      outline: none !important;
+      margin: 1em auto;
+      text-align: center;
+    }
+
+    a{
+      height: 20px;
+      line-height: 20px;
+      text-decoration: none;
+      font-size: 30px;
+      color: #fff;
+      text-align: center;
+      margin-left: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-bottom: 2px;
+      border: 2px solid #fff;
+      -webkit-border-radius: 999px;
+      -moz-border-radius: 999px;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!--viewPort可视区域，做画布的地方-->
+  <!--fill填充-->
+  <!--stroke-dasharray-->
+  <h1>SVG Circle Progress</h1>
+  <h2>Based off of CSS3 circle progress bars</h2>
+
+  <div id="cont" data-pct="100">
+    <svg id="svg" width="200" height="200" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <circle r="90" cx="100" cy="100" fill="transparent" stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
+      <circle id="bar" r="90" cx="100" cy="100" fill="transparent" stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
+    </svg>
+  </div>
+  <label for="percent">Type a percent!</label>
+  <input id="percent" name="percent">
+  <a href="javascript:;" id="plu">+</a>
+  <a href="javascript:;" id="sub">-</a>
+  <script src="http://cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+  <script>
+    // let cont = document.getElementById('cont')
+    // setTimeout(()=>{
+    //   cont.dataset.pct = 25
+    // },2000)
+    var $circle = $('#svg #bar');
+    // var val = parseInt($('#percent').val());
+    // console.log(val)
+    var r = $circle.attr('r');
+    var c = Math.PI * (r * 2);
+    var inputVal = document.getElementById('percent')
+    $('#plu').on('click',function() {
+        $('#cont').attr('data-pct',parseInt($('#cont').attr('data-pct'))+1);
+        //画的百分比
+        inputVal.value = $('#cont').attr('data-pct')
+        // $('#percent').val() = $('#cont').attr('data-pct')
+        var pct = ((100 - $('#cont').attr('data-pct')) / 100) * c;
+        $circle.css({ strokeDashoffset: pct});
+    })
+    $('#sub').on('click',function() {
+        $('#cont').attr('data-pct',parseInt($('#cont').attr('data-pct'))-1);
+        //画的百分比
+        inputVal.value = $('#cont').attr('data-pct')
+        // $('#percent').val() = $('#cont').attr('data-pct')
+        var pct = ((100 - $('#cont').attr('data-pct')) / 100) * c;
+        $circle.css({ strokeDashoffset: pct});
+    })
+    $('#percent').on('change', function () {
+      var val = parseInt($(this).val());
+      if (isNaN(val)) {
+        val = 100;
+      }
+      else {
+        if (val < 0) { val = 0; }
+        if (val > 100) { val = 100; }
+
+        var pct = ((100 - val) / 100) * c;
+
+        //画的百分比
+        $circle.css({ strokeDashoffset: pct });
+
+        //值显示
+        $('#cont').attr('data-pct', val);
+      }
+    });
+
+  </script>
+</body>
+
+</html>
